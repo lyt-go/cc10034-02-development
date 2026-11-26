@@ -77,5 +77,18 @@ npm run dev
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
 
+## 预算预约与差分执行联动
+
+隐私预算页提供「预约额度」表单，为待执行的差分查询预留额度并出具预算预约回执；
+差分查询页凭有效（已确认）预约提交执行并领取执行回执。
+
+- 后端 `app/services/budget_flow.py` 核验数据集与申请费用，全部余额判定与状态变更
+  在同一把锁内完成：已确认预约合计 + 已消耗永不超过预算总额。
+- 预约状态：`已确认 / 已拒绝 / 已取消 / 已执行`；余额不足的申请会留下「已拒绝」回执，
+  取消与执行竞争时只有一个生效，双方查到的终态一致。
+- 执行按预约幂等：同一预约重复提交返回同一份执行回执，扣费记录只确认一次。
+- 接口：`GET/POST /api/privacy_budget/reservations`、`POST …/reservations/{id}/cancel`、
+  `GET /api/privacy_budget/charges`、`POST /api/differential_sql/execute`。
+
 领域：数据工程
 子方向：数据分析与数据应用

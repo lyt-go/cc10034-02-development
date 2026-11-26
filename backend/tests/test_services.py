@@ -148,9 +148,11 @@ class TestWriteAndActions:
         """新增时 ID 应基于当前最大ID自增。"""
         service = DifferentialSqlService()
         values = {"查询编号": "DIFF-TEST", "查询语句": "SELECT COUNT(*) FROM t", "查询用户": "tester"}
+        existing, _ = service.list_entries(page=1, size=1_000_000)
+        expected = max(int(item["id"]) for item in existing) + 1
         entry, _ = service.create_entry(values)
         assert entry is not None
-        assert entry["id"] == 4
+        assert entry["id"] == expected
 
     def test_create_all_required_fields(self):
         """行为类模块完整字段创建。"""

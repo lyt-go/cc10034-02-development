@@ -70,6 +70,16 @@
       </tbody>
     </table>
 
+    <BudgetReservationPanel
+      v-if="meta.key === 'privacy_budget'"
+      :budgets="rows"
+      @changed="reload"
+    />
+    <DifferentialExecutePanel
+      v-if="meta.key === 'differential_sql'"
+      @changed="reload"
+    />
+
     <div v-if="showCreate" class="modal-backdrop" data-testid="create-modal">
       <form class="modal" @submit.prevent="submitCreate">
         <h3>登记{{ meta.entity }}</h3>
@@ -104,6 +114,8 @@ import {
   runAction as applyAction,
 } from '@/api/backend-service'
 import type { EntryRow } from '@/data/types'
+import BudgetReservationPanel from '@/views/panels/BudgetReservationPanel.vue'
+import DifferentialExecutePanel from '@/views/panels/DifferentialExecutePanel.vue'
 
 const props = defineProps<{ moduleKey: string }>()
 const meta = moduleMeta(props.moduleKey)
